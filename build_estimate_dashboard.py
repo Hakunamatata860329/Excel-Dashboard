@@ -7,7 +7,8 @@ from openpyxl.utils import get_column_letter
 from openpyxl.chart import BarChart, Reference
 from openpyxl.formatting.rule import CellIsRule
 
-DATA_DIR = Path(__file__).parent / "data"
+INPUT_DIR  = Path(__file__).parent / "data" / "output"   # ESTIMATE_with.xlsx lives in output/
+OUTPUT_DIR = Path(__file__).parent / "data" / "output"
 
 C_DARK_GREEN    = "0F4C1F"
 C_MID_GREEN     = "116A1E"
@@ -40,7 +41,7 @@ def parse_hours(text) -> float:
 
 # ── data loading ──────────────────────────────────────────────────────────────
 def load_data() -> pd.DataFrame:
-    df = pd.read_excel(DATA_DIR / "ESTIMATE_with.xlsx")
+    df = pd.read_excel(INPUT_DIR / "ESTIMATE_with.xlsx")
     df["est_h"]   = df["Estimate"].apply(parse_hours)
     df["spend_h"] = df["TimeSpend"].apply(parse_hours)
     df["diff_h"]  = (df["spend_h"] - df["est_h"]).round(1)
@@ -286,7 +287,7 @@ def run():
     for owner in owners:
         cws_row = build_owner(wb, cws, owner, df[df["Owner"] == owner].copy(), cws_row)
 
-    out = DATA_DIR / "ESTIMATE_dashboard.xlsx"
+    out = OUTPUT_DIR / "ESTIMATE_dashboard.xlsx"
     wb.save(out)
     print(f"Saved: {out}  ({len(wb.sheetnames)} sheets)")
 

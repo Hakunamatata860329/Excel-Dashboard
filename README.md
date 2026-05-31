@@ -6,10 +6,10 @@
 
 ## 你需要準備什麼
 
-將 YouTrack 匯出的 Excel 放在 `data/` 資料夾，檔名為：
+將 YouTrack 匯出的 Excel 放在 `data/input/` 資料夾，檔名為：
 
 ```
-data/ESTIMATE.xlsx
+data/input/ESTIMATE.xlsx
 ```
 
 **必要的 sheet 與欄位：**
@@ -52,7 +52,7 @@ python pipeline.py --step estimate-dashboard   # 步驟二：產生 Dashboard
 
 ## 你會得到什麼
 
-執行後，`data/` 資料夾會產出三個檔案：
+執行後，`data/output/` 資料夾會產出三個檔案：
 
 ### `ESTIMATE_with.xlsx`
 符合條件的有效資料（Type = Task 且 Estimate、TimeSpend 均有值）。
@@ -73,17 +73,17 @@ python pipeline.py --step estimate-dashboard   # 步驟二：產生 Dashboard
 ## Pipeline 流程
 
 ```
-data/ESTIMATE.xlsx
+data/input/ESTIMATE.xlsx
         │
         ▼
-  split_estimate.py         ← 依 Type 與工時是否完整分組
+  split_estimate.py              ← 依 Type 與工時是否完整分組
         │
-        ├── data/ESTIMATE_with.xlsx    (有效 Task)
-        └── data/ESTIMATE_without.xlsx (排除資料)
+        ├── data/output/ESTIMATE_with.xlsx    (有效 Task)
+        └── data/output/ESTIMATE_without.xlsx (排除資料)
                 │
                 ▼
-  build_estimate_dashboard.py  ← 建立 Excel Dashboard
+  build_estimate_dashboard.py    ← 建立 Excel Dashboard
                 │
                 ▼
-        data/ESTIMATE_dashboard.xlsx
+        data/output/ESTIMATE_dashboard.xlsx
 ```

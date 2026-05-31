@@ -10,7 +10,7 @@ Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-s
 
 | 檔案 | 說明 |
 |---|---|
-| `data/ESTIMATE.xlsx` | 原始資料（sheet: `in`），欄位：Estimate、TimeSpend、Planned For、Type、ID、Summary、Owner、State |
+| `data/input/ESTIMATE.xlsx` | 原始資料（sheet: `in`），欄位：Estimate、TimeSpend、Planned For、Type、ID、Summary、Owner、State |
 
 ### Pipeline 入口
 
@@ -33,12 +33,13 @@ python pipeline.py --all                              # 全部步驟
 ### 各腳本職責
 
 **`split_estimate.py`**
-- 分組規則：`Estimate` 與 `TimeSpend` 均有值 **且** `Type == "Task"` → `ESTIMATE_with.xlsx`；其餘（含 Issue、任一欄為空）→ `ESTIMATE_without.xlsx`
+- 讀取 `data/input/ESTIMATE.xlsx`
+- 分組規則：`Estimate` 與 `TimeSpend` 均有值 **且** `Type == "Task"` → `data/output/ESTIMATE_with.xlsx`；其餘（含 Issue、任一欄為空）→ `data/output/ESTIMATE_without.xlsx`
 
 **`build_estimate_dashboard.py`**
-- 讀取 `data/ESTIMATE_with.xlsx`，解析時間字串為小時（float）
+- 讀取 `data/output/ESTIMATE_with.xlsx`，解析時間字串為小時（float）
 - 時間解析：`parse_hours()` 支援 `"1 hour 30 mins"` → `1.5h`、`"30 mins"` → `0.5h` 等格式
-- 產出 `data/ESTIMATE_dashboard.xlsx`，包含：
+- 產出 `data/output/ESTIMATE_dashboard.xlsx`，包含：
   - **Summary** 頁籤：整體 KPI（Total Estimate/TimeSpend/Utilization/Tasks）+ 兩張圖表（by Owner、by Sprint）
   - **12 個 Owner 頁籤**：個人 KPI、Sprint 比較圖表、明細表
 - 圖表資料存於隱藏工作表 `_ChartData`（避免 Excel 不讀隱藏欄的問題）
@@ -58,13 +59,17 @@ python pipeline.py --all                              # 全部步驟
 
 > **openpyxl 水平長條圖注意**：`x_axis` 對應類別軸（左側），`y_axis` 對應數值軸（底部），與直覺相反。設定軸標題時需對調。
 
-### 輸出檔案
+### 資料夾結構
 
-| 檔案 | 說明 |
-|---|---|
-| `data/ESTIMATE_with.xlsx` | 有效 Task 資料（130 筆）|
-| `data/ESTIMATE_without.xlsx` | Issue 及工時不完整資料（401 筆）|
-| `data/ESTIMATE_dashboard.xlsx` | 13 頁籤 Dashboard（Summary + 12 Owner）|
+```
+data/
+├── input/
+│   └── ESTIMATE.xlsx          ← 放入此處（YouTrack 匯出）
+└── output/
+    ├── ESTIMATE_with.xlsx      ← 有效 Task 資料（130 筆）
+    ├── ESTIMATE_without.xlsx   ← Issue 及工時不完整資料（401 筆）
+    └── ESTIMATE_dashboard.xlsx ← 13 頁籤 Dashboard（Summary + 12 Owner）
+```
 
 ---
 
