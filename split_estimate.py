@@ -1,0 +1,19 @@
+import pandas as pd
+from pathlib import Path
+
+DATA_DIR = Path(__file__).parent / "data"
+
+def run():
+    df = pd.read_excel(DATA_DIR / "ESTIMATE.xlsx", sheet_name="in")
+    is_with = (
+        df["Estimate"].notna() &
+        df["TimeSpend"].notna() &
+        (df["Type"] == "Task")
+    )
+    df[is_with].to_excel(DATA_DIR / "ESTIMATE_with.xlsx", index=False)
+    df[~is_with].to_excel(DATA_DIR / "ESTIMATE_without.xlsx", index=False)
+    print(f"ESTIMATE_with.xlsx:    {is_with.sum()} rows")
+    print(f"ESTIMATE_without.xlsx: {(~is_with).sum()} rows")
+
+if __name__ == "__main__":
+    run()
