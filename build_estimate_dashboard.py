@@ -5,6 +5,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.chart import BarChart, Reference
+from openpyxl.chart.layout import Layout, ManualLayout
 from openpyxl.formatting.rule import CellIsRule
 
 INPUT_DIR  = Path(__file__).parent / "data" / "output"   # ESTIMATE_with.xlsx lives in output/
@@ -124,17 +125,28 @@ def _write_sprint_pivot(cws, df: pd.DataFrame, start_row: int, start_col: int):
 
 
 # ── bar chart factory ─────────────────────────────────────────────────────────
-def _bar_chart(cws, title, hdr_row, last_row, cat_col, val_cols, width, height, y_title=""):
+def _bar_chart(cws, title, hdr_row, last_row, cat_col, val_cols, width, height,
+               x_title="", y_title="Hours"):
     chart = BarChart()
     chart.type      = "bar"        # horizontal: categories on Y, values on X
     chart.grouping  = "clustered"
     chart.title     = title
-    # openpyxl horizontal bar: x_axis = category axis (left/vertical),
-    #                           y_axis = value axis (bottom/horizontal)
-    chart.x_axis.title = y_title   # category label on left axis
-    chart.y_axis.title = "Hours"   # value label on bottom axis
     chart.width     = width
     chart.height    = height
+    # openpyxl horizontal bar: x_axis = category axis (left), y_axis = value axis (bottom)
+    chart.x_axis.title = x_title
+    chart.y_axis.title = y_title
+    # Manual plot area layout: reserve left/bottom margin so axis titles don't overlap tick labels
+    chart.plot_area.layout = Layout(
+        manualLayout=ManualLayout(
+            layoutTarget="inner",
+            xMode="edge", yMode="edge", wMode="edge", hMode="edge",
+            x=0.14,   # 14% left margin for category-axis title + sprint/owner labels
+            y=0.04,
+            w=0.78,   # inner plot width
+            h=0.80,   # inner plot height; remaining 16% bottom for value-axis title + tick numbers
+        )
+    )
 
     cats = Reference(cws, min_col=cat_col, min_row=hdr_row+1, max_row=last_row)
     colors = [C_ESTIMATE_BLUE, C_LIGHT_GREEN]   # Estimate=light blue, TimeSpend=green
@@ -187,12 +199,12 @@ def build_summary(wb: Workbook, cws, df: pd.DataFrame, owners):
 
     # Owner chart — right side, col O, row 1
     chart1 = _bar_chart(cws, "Estimate vs TimeSpend by Owner",
-                        owner_hdr, owner_last, 1, [2, 3], 24, 18, y_title="Owner")
+                        owner_hdr, owner_last, 1, [2, 3], 24, 18, x_title="Owner")
     ws.add_chart(chart1, "O1")
 
     # Sprint chart — right side, below owner chart (~row 28)
     chart2 = _bar_chart(cws, "Estimate vs TimeSpend by Sprint",
-                        sprint_hdr, sprint_last, 5, [6, 7], 24, 14, y_title="Planned For")
+                        sprint_hdr, sprint_last, 5, [6, 7], 24, 14, x_title="Sprint")
     ws.add_chart(chart2, "O28")
 
 
@@ -233,7 +245,7 @@ def build_owner(wb: Workbook, cws, owner: str, df_owner: pd.DataFrame, cws_row: 
 
     # chart — right side of data (col A-H), placed at col J
     chart = _bar_chart(cws, "Estimate vs TimeSpend by Sprint",
-                       hdr_r, last_r, 9, [10, 11], 24, 16, y_title="Planned For")
+                       hdr_r, last_r, 9, [10, 11], 24, 16, x_title="Sprint")
     ws.add_chart(chart, "J1")
 
     # detail table

@@ -57,7 +57,7 @@ python pipeline.py --all                              # 全部步驟
 | 位置（Owner 頁籤）| 右側 col J，不遮蓋 A–H 資料 |
 | 位置（Summary）| 右側 col O |
 
-> **openpyxl 水平長條圖注意**：`x_axis` 對應類別軸（左側），`y_axis` 對應數值軸（底部），與直覺相反。設定軸標題時需對調。
+> **openpyxl 水平長條圖注意**：`x_axis` 對應類別軸（左側），`y_axis` 對應數值軸（底部），與直覺相反。需搭配 `plot_area.layout`（`Layout` from `openpyxl.chart.layout`）手動設定 inner plot area 的留白（x=0.14, w=0.78, h=0.80），否則軸標題會覆蓋刻度標籤。
 
 ### 資料夾結構
 
