@@ -34,10 +34,10 @@ python pipeline.py --all                              # 全部步驟
 
 **`split_estimate.py`**
 - 讀取 `data/input/ESTIMATE.xlsx`
-- 分組規則：`Estimate` 與 `TimeSpend` 均有值 **且** `Type == "Task"` → `data/output/ESTIMATE_with.xlsx`；其餘（含 Issue、任一欄為空）→ `data/output/ESTIMATE_without.xlsx`
+- 分組規則：`Type == "Task"` → `data/output/ESTIMATE_Task.xlsx`；`Type == "Issue"` → `data/output/ESTIMATE_Issue.xlsx`
 
 **`build_estimate_dashboard.py`**
-- 讀取 `data/output/ESTIMATE_with.xlsx`，解析時間字串為小時（float）
+- 讀取 `data/output/ESTIMATE_Task.xlsx`，解析時間字串為小時（float）
 - 時間解析：`parse_hours()` 支援 `"1 hour 30 mins"` → `1.5h`、`"30 mins"` → `0.5h` 等格式
 - 產出 `data/output/ESTIMATE_dashboard.xlsx`，包含：
   - **Summary** 頁籤：整體 KPI（Total Estimate/TimeSpend/Utilization/Tasks）+ 兩張圖表（by Owner、by Sprint）
@@ -66,8 +66,8 @@ data/
 ├── input/
 │   └── ESTIMATE.xlsx          ← 放入此處（YouTrack 匯出）
 └── output/
-    ├── ESTIMATE_with.xlsx      ← 有效 Task 資料（130 筆）
-    ├── ESTIMATE_without.xlsx   ← Issue 及工時不完整資料（401 筆）
+    ├── ESTIMATE_Task.xlsx       ← Task 資料
+    ├── ESTIMATE_Issue.xlsx      ← Issue 資料
     └── ESTIMATE_dashboard.xlsx ← 13 頁籤 Dashboard（Summary + 12 Owner）
 ```
 

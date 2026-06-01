@@ -54,11 +54,11 @@ python pipeline.py --step estimate-dashboard   # 步驟二：產生 Dashboard
 
 執行後，`data/output/` 資料夾會產出三個檔案：
 
-### `ESTIMATE_with.xlsx`
-符合條件的有效資料（Type = Task 且 Estimate、TimeSpend 均有值）。
+### `ESTIMATE_Task.xlsx`
+Type = Task 的資料。
 
-### `ESTIMATE_without.xlsx`
-排除的資料（Issue 類型，或工時欄位有缺漏）。
+### `ESTIMATE_Issue.xlsx`
+Type = Issue 的資料。
 
 ### `ESTIMATE_dashboard.xlsx`
 主要產出，包含以下分頁：
@@ -76,10 +76,10 @@ python pipeline.py --step estimate-dashboard   # 步驟二：產生 Dashboard
 data/input/ESTIMATE.xlsx
         │
         ▼
-  split_estimate.py              ← 依 Type 與工時是否完整分組
+  split_estimate.py              ← 依 Type 分組
         │
-        ├── data/output/ESTIMATE_with.xlsx    (有效 Task)
-        └── data/output/ESTIMATE_without.xlsx (排除資料)
+        ├── data/output/ESTIMATE_Task.xlsx    (Task)
+        └── data/output/ESTIMATE_Issue.xlsx   (Issue)
                 │
                 ▼
   build_estimate_dashboard.py    ← 建立 Excel Dashboard
